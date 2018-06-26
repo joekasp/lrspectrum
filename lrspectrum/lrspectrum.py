@@ -199,6 +199,11 @@ class LRSpectrum(object):
                         mn = float(k)
                     if mx is None or float(k) > mx:
                         mx = float(k)
+
+            if not mn:
+                mn = 1.0
+                mx = 1.0
+                print("Only zero oscillator strengths found!")
             # We are going to use the quantile function of the lorentz
             # distribution here, even if the actual distribution is gaussian
             lb = broad*np.tan(((1-percent)-0.5)*np.pi)+mn
