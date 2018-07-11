@@ -155,6 +155,7 @@ class LRSpectrum(object):
                 temp = parsers.progs[program](lg, self.is2c)
                 for key, value in temp.items():
                     if key in self.roots:
+                        print('WARNING: Roots match between logfiles')
                         if value > self.roots[key]:
                             self.roots[key] = value
                     else:
