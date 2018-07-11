@@ -78,7 +78,12 @@ def _parse_gaussian(logfile, is2c=False):
             if not is2c:
                 results[lsp[4]] = float(lsp[8].lstrip('f='))
             else:
-                results[lsp[3]] = float(lsp[7])
+                # Add up degenerate roots for 2C (should be general for both)
+                if lsp[3] in results:
+                    results[lsp[3]] += float(lsp[7])
+                else:
+                    results[lsp[3]] = float(lsp[7])
+
             # eV and unitless, respectively
     return results
 

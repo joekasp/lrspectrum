@@ -151,7 +151,15 @@ class LRSpectrum(object):
                 program = parsers.detect(lg)
             # TODO: Break up following line for clarity
             if program == 'gaussian':
-                self.roots.update(parsers.progs[program](lg, self.is2c))
+                #self.roots.update(parsers.progs[program](lg, self.is2c))
+                temp = parsers.progs[program](lg, self.is2c)
+                for key, value in temp.items():
+                    if key in self.roots:
+                        if value > self.roots[key]:
+                            self.roots[key] = value
+                    else:
+                        self.roots[key] = value
+                        
             else:
                 self.roots.update(parsers.progs[program](lg))
 
