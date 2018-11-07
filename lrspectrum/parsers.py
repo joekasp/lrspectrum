@@ -65,26 +65,46 @@ def _parse_delim(logfile):
     return results
 
 
-def _parse_gaussian(logfile, is2c=False):
+def _parse_gaussian(logfile, is2c=False, orbs=None):
     """Parses gaussian output"""
+
+    # orbs should be a tuple
+    # TODO: Add tuple check
+    if orbs:
+        orbrange = list(range(orbs[0],orbs[1]+1))
 
     # No file descriptor logfiles
     _check_nonint(logfile)
 
     results = {}
-    for i, line in enumerate(open(logfile)):
-        if 'Excited State' in line[1:14]:
+    fin = open(logfile)
+    for line in fin:
+        if 'Excited State' in line:
             lsp = line.split()
             if not is2c:
+                if orbrange:
+                    raise RuntimeError('orbrange and not x2c NYE')
+                # TODO: Fix Torin's problems
                 results[lsp[4]] = float(lsp[8].lstrip('f='))
             else:
                 # Add up degenerate roots for 2C (should be general for both)
-                if lsp[3] in results:
-                    results[lsp[3]] += float(lsp[7])
+                oscstr = float(lsp[7])
+                freq = lsp[3]
+                keep = False
+                line = next(fin)
+                if orbs:
+                    while '->' in line:
+                        keep |= int(line.split()[0]) in orbrange
+                        line = next(fin)
                 else:
-                    results[lsp[3]] = float(lsp[7])
+                    keep = True
 
-            # eV and unitless, respectively
+                if keep:
+                    try:
+                        results[freq] += float(oscstr)
+                    except KeyError:
+                        results[freq] = float(oscstr)
+    # eV and unitless, respectively
     return results
 
 

@@ -103,6 +103,7 @@ class LRSpectrum(object):
         name = kwargs.pop('name', None)
         program = kwargs.pop('program', None)
         is2c = kwargs.pop('is2c', False)
+        orbs = kwargs.pop('orbs', None)
 
         # Support either one list of logfiles or many logfiles as params
         if isinstance(multLogNames[0], list):
@@ -124,6 +125,7 @@ class LRSpectrum(object):
         self.wlim = None
         self.res = None
         self.is2c = is2c
+        self.orbs = orbs
 
         # Always call parser when initializing
         self.parse_log(program=program)
@@ -152,7 +154,7 @@ class LRSpectrum(object):
             # TODO: Break up following line for clarity
             if program == 'gaussian':
                 #self.roots.update(parsers.progs[program](lg, self.is2c))
-                temp = parsers.progs[program](lg, self.is2c)
+                temp = parsers.progs[program](lg, self.is2c, self.orbs)
                 for key, value in temp.items():
                     if key in self.roots:
                         print('WARNING: Roots match between logfiles')
@@ -374,7 +376,6 @@ class LRSpectrum(object):
         The lorentzian is centered at root, integrates to osc_str, and has a
         half-width at half-max of broad.
         """
-
         ones = np.ones(self.freq.shape)
         # 1/(pi*broad*(1+((w-root)/broad)^2))
         l_denom = broad*np.pi*(1+np.square((self.freq-root*ones)/broad))
