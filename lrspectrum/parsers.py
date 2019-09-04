@@ -82,28 +82,27 @@ def _parse_gaussian(logfile, is2c=False, orbs=None):
         if 'Excited State' in line:
             lsp = line.split()
             if not is2c:
-                if orbrange:
-                    raise RuntimeError('orbrange and not x2c NYE')
-                # TODO: Fix Torin's problems
-                results[lsp[4]] = float(lsp[8].lstrip('f='))
+                oscstr = float(lsp[8].lstrip('f='))
+                freq = lsp[4]
+#                results[lsp[4]] = float(lsp[8].lstrip('f='))
             else:
                 # Add up degenerate roots for 2C (should be general for both)
                 oscstr = float(lsp[7])
                 freq = lsp[3]
-                keep = False
-                line = next(fin)
-                if orbs:
-                    while '->' in line:
-                        keep |= int(line.split()[0]) in orbrange
-                        line = next(fin)
-                else:
-                    keep = True
+            keep = False
+            line = next(fin)
+            if orbs:
+                while '->' in line:
+                    keep |= int(line.split()[0]) in orbrange
+                    line = next(fin)
+            else:
+                keep = True
 
-                if keep:
-                    try:
-                        results[freq] += float(oscstr)
-                    except KeyError:
-                        results[freq] = float(oscstr)
+            if keep:
+                try:
+                    results[freq] += oscstr
+                except KeyError:
+                    results[freq] = oscstr
     # eV and unitless, respectively
     return results
 

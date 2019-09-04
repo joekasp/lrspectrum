@@ -354,7 +354,7 @@ class LRSpectrum(object):
         # Plot poles
         if sticks:
             for root, osc_str in self.roots.items():
-                r = float(root)
+                r = float(root) + xshift
                 ax.plot((r, r), (0, osc_str), 'k-', **kwargs)
 
         if show:  # pragma: no cover
